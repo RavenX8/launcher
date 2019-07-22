@@ -13,6 +13,8 @@
     "electron-builder": "^21.1.1"
   },
   "dependencies": {
+    "decompress-zip": "^0.2.2",
+    "electron-dl": "^1.14.0",
     "electron-log": "^3.0.6",
     "electron-updater": "^4.1.2"
   },

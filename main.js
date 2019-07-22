@@ -1,6 +1,10 @@
-const { app, BrowserWindow } = require('electron')
-const log = require('electron-log');
+const {app, BrowserWindow, ipcMain} = require('electron');
+const {download} = require("electron-dl");
+const {log} = require('electron-log');
 const {autoUpdater} = require("electron-updater");
+const {fs} = require('fs');
+const {path} = require('path');
+var DecompressZip = require('decompress-zip');
 
 // Make sure javascript doesn't kill our window before we are done with it
 let win
@@ -35,6 +39,38 @@ function createWindow () {
     // when you should delete the corresponding element.
     win = null
   })
+
+  ipcMain.on("download", (event, info) => {
+    info.properties.onProgress = status => win.webContents.send("download progress", status);
+    download(BrowserWindow.getFocusedWindow(), info.url, info.properties)
+        .then(dl => win.webContents.send("download complete", dl.getSavePath()));
+  });
+
+  ipcMain.on("extract file", (event, info) => {
+    var unzipper = new DecompressZip(info.file);
+
+    unzipper.on('error', function (err) {
+      log.error('Caught an error');
+    });
+
+    unzipper.on('extract', function (log) {
+      log.info(log);
+      // if (fs.existsSync(log.filename)) {
+      //   fs.unlink(log.filename, (err) => {
+      //       if (err) {
+      //           return;
+      //       }
+      //   });
+      // }
+    });
+
+    unzipper.extract({
+      path: '.',
+      filter: function (file) {
+          return file.type !== "SymbolicLink";
+      }
+    });
+  });
 }
 
 //let working_directory = app.getPath('app')
@@ -55,6 +91,11 @@ app.on('activate', () => {
   }
 })
 
+autoUpdater.on('error', message => {
+  log.error('There was a problem updating the application')
+  log.error(message)
+})
+
 // If there aren't any updates, create the window
 autoUpdater.on('update-not-available', (ev, info) => {
   createWindow();
@@ -71,5 +112,6 @@ autoUpdater.on('update-downloaded', (ev, info) => {
 })
 
 app.on('ready', function()  {
-  autoUpdater.checkForUpdates();
+  //autoUpdater.checkForUpdates();
+  createWindow();
 });
