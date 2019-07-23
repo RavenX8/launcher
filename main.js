@@ -1,10 +1,19 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
 const {download} = require("electron-dl");
-const {autoUpdater} = require("electron-updater");
+//const {autoUpdater} = require("electron-updater");
 const fs = require('fs');
 const {spawn} = require('child_process');
 var DecompressZip = require('decompress-zip');
 var sha256 = require('js-sha256');
+
+const path = require('path')
+const devMode = (process.argv || []).indexOf('--dev') !== -1
+
+if (devMode) {
+  // load the app dependencies
+  const PATH_APP_NODE_MODULES = path.join(__dirname, '..', '..', 'app', 'node_modules')
+  require('module').globalPaths.push(PATH_APP_NODE_MODULES)
+}
 
 // Make sure javascript doesn't kill our window before we are done with it
 let win;
@@ -13,16 +22,17 @@ function createWindow () {
   // Create the browser window.
   var basepath = app.getAppPath();
   let win = new BrowserWindow({
-    width: 800,
+    width: 500,
     height: 600,
-    center: true,
+    //center: true,
     resizable: false,
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
       show: false
     }
-  })
+  });
+  win.setMenu(null);
   // and load the index.html of the app.
   win.loadFile('html/index.html', {"extraHeaders" : "pragma: no-cache\n"})
 
@@ -31,7 +41,8 @@ function createWindow () {
   });
 
   // Open the DevTools.
-  //win.webContents.openDevTools();
+  if(devMode)
+    win.webContents.openDevTools();
 
   win.once('ready-to-show', () => {
     win.show()
@@ -80,9 +91,12 @@ function createWindow () {
   ipcMain.on("check-file", (event, info) => {
     if (fs.existsSync(info.filename)) {
       var file_for_update = fs.readFileSync(info.filename);
-      var hash = sha256(file_for_update.toString());
-      console.log("Hash: '" + hash.toUpperCase() + "'");
-      console.log("info.hash: '" + info.hash.toUpperCase() + "'");
+      var hash = sha256(file_for_update);
+      if(devMode) {
+        console.log("Hash: '" + hash.toUpperCase() + "'");
+        console.log("info.hash: '" + info.hash.toUpperCase() + "'");
+      }
+      
       if(hash.toUpperCase() != info.hash.toUpperCase())
       {
         download(BrowserWindow.getFocusedWindow(), info.url, {directory: "."})
@@ -90,6 +104,9 @@ function createWindow () {
             win.webContents.send("download complete", dl.getSavePath())
             event.returnValue = true;
           });
+        
+      } else {
+        event.returnValue = true;
       }
     } else {
       //console.log(info.url);
@@ -114,14 +131,12 @@ function createWindow () {
   });
 
   ipcMain.on("launch-game", (event, info) => {
-    // console.log("launching game!!!!");
-    // console.log(info.processName);
-    // console.log(info.processArgs);
     const subprocess = spawn(info.processName, info.processArgs, {
       detached: true,
       stdio: 'ignore'
     });
     subprocess.unref();
+    win.close();
   });
 }
 
@@ -141,26 +156,26 @@ app.on('activate', () => {
   }
 });
 
-app.on('ready', function()  {
+app.on('ready', function() {
   //autoUpdater.checkForUpdates();
   createWindow();
 });
 
-autoUpdater.on('error', message => {
-  console.log('There was a problem updating the application')
-  console.log(message)
-});
+// autoUpdater.on('error', message => {
+//   console.log('There was a problem updating the application')
+//   console.log(message)
+// });
 
-// If there aren't any updates, create the window
-autoUpdater.on('update-not-available', (ev, info) => {
-  createWindow();
-});
+// // If there aren't any updates, create the window
+// autoUpdater.on('update-not-available', (ev, info) => {
+//   createWindow();
+// });
 
-autoUpdater.on('update-downloaded', (ev, info) => {
-  // Wait 5 seconds, then quit and install
-  // In your application, you don't need to wait 5 seconds.
-  // You could call autoUpdater.quitAndInstall(); immediately
-  //setTimeout(function() {
-    autoUpdater.quitAndInstall();
-  //}, 1000);
-});
+// autoUpdater.on('update-downloaded', (ev, info) => {
+//   // Wait 5 seconds, then quit and install
+//   // In your application, you don't need to wait 5 seconds.
+//   // You could call autoUpdater.quitAndInstall(); immediately
+//   //setTimeout(function() {
+//     autoUpdater.quitAndInstall();
+//   //}, 1000);
+// });

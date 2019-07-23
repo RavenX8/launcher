@@ -2,6 +2,7 @@ const {ipcRenderer} = require('electron');
 const {log} = require('electron-log');
 
 document.getElementById("btn-launch").disabled = true;
+document.getElementById("btn-launch").innerHTML = "Updating...";
 let processName = "";
 let processArgs = [];
 let serverIp = "";
@@ -61,6 +62,7 @@ function send_launch() {
 
 function update_complete() {
   document.getElementById("btn-launch").disabled = false;
+  document.getElementById("btn-launch").innerHTML = "Launch!";
 }
 
 ipcRenderer.on("download progress", (event, progress) => {
@@ -76,12 +78,12 @@ ipcRenderer.on("server address update", (event, info) => {
 
 ipcRenderer.on("download complete", (event, file) => {
   if(file.includes(".zip") == true) {
-    console.log('sending \'extract file\' event for \'' + file + '\'');
+    //console.log('sending \'extract file\' event for \'' + file + '\'');
     ipcRenderer.send("extract file", {filename: file});
   }
-  else {
-    console.log('we finished downloading ' + file);
-  }
+  // else {
+  //   console.log('we finished downloading ' + file);
+  // }
 });
 
 // ipcRenderer.on('message', function(event, text) {
