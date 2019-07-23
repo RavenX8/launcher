@@ -163,7 +163,6 @@ autoUpdater.on('error', (error) => {
 });
 
 autoUpdater.on('update-available', () => {
-  autoUpdater.downloadUpdate();
 });
 
 autoUpdater.on('update-not-available', (info) => {
@@ -191,12 +190,13 @@ autoUpdater.on('update-not-available', (info) => {
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  dialog.showMessageBox({
-    title: 'Install Updates',
-    message: 'Updates downloaded, application will close for update...'
-  }, () => {
-    setImmediate(() => autoUpdater.quitAndInstall())
-  })
+  // dialog.showMessageBox({
+  //   title: 'Install Updates',
+  //   message: 'Updates downloaded, application will close for update...'
+  // }, () => {
+  //   setImmediate(() => autoUpdater.quitAndInstall());
+  // });
+  autoUpdater.quitAndInstall();
 });
 
 app.on('ready', function() {

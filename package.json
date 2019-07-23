@@ -1,7 +1,7 @@
 {
-  "name": "osirose-updater",
-  "version": "0.1.0",
-  "description": "",
+  "name": "osirose-patcher",
+  "version": "0.1.1",
+  "description": "ROSE online patcher made for osirose-new",
   "main": "main.js",
   "scripts": {
     "start": "electron . --dev",
@@ -30,8 +30,8 @@
         "channel": "latest"
       }
     },
-    "appId": "com.github.dev-osrose.updater",
-    "productName": "updater",
+    "appId": "com.github.dev-osrose.patcher",
+    "productName": "OsIROSE Test Server",
     "copyright": "Copyright © 2019 ${author}"
   }
 }
