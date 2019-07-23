@@ -16,7 +16,8 @@
     "decompress-zip": "^0.2.2",
     "electron-dl": "^1.14.0",
     "electron-log": "^3.0.6",
-    "electron-updater": "^4.1.2"
+    "electron-updater": "^4.1.2",
+    "js-sha256": "^0.9.0"
   },
   "build": {
     "publish": [
