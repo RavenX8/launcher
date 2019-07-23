@@ -1,5 +1,6 @@
 const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const {download} = require("electron-dl");
+const {autoUpdater} = require("electron-updater");
 const fs = require('fs');
 const {spawn} = require('child_process');
 var DecompressZip = require('decompress-zip');
@@ -11,8 +12,9 @@ const devMode = (process.argv || []).indexOf('--dev') !== -1
 
 if (devMode) {
   // load the app dependencies
-  const PATH_APP_NODE_MODULES = path.join(__dirname, '..', '..', 'app', 'node_modules')
-  require('module').globalPaths.push(PATH_APP_NODE_MODULES)
+  const PATH_APP_NODE_MODULES = path.join(__dirname, '..', '..', 'app', 'node_modules');
+  require('module').globalPaths.push(PATH_APP_NODE_MODULES);
+  autoUpdater.updateConfigPath = path.join(__dirname, 'app-update.yml');
 }
 
 // Make sure javascript doesn't kill our window before we are done with it
@@ -123,6 +125,7 @@ function createWindow () {
 
   ipcMain.on("launch-game", (event, info) => {
     const subprocess = spawn(gameDirectory + info.processName, info.processArgs, {
+      cwd: gameDirectory,
       detached: true,
       stdio: 'ignore'
     });
@@ -147,8 +150,16 @@ app.on('activate', () => {
   }
 });
 
-app.on('ready', function() {
-  //autoUpdater.checkForUpdates();
+autoUpdater.on('error', (error) => {
+  dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString());
+  win.close();
+});
+
+autoUpdater.on('update-available', () => {
+  autoUpdater.downloadUpdate();
+});
+
+autoUpdater.on('update-not-available', (info) => {
   if(gameDirectory == '')
   {
     dialog.showMessageBox({
@@ -170,4 +181,41 @@ app.on('ready', function() {
     store.set('gameDir', gameDirectory);
   }
   createWindow();
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  dialog.showMessageBox({
+    title: 'Install Updates',
+    message: 'Updates downloaded, application will close for update...'
+  }, () => {
+    setImmediate(() => autoUpdater.quitAndInstall())
+  })
+});
+
+app.on('ready', function() {
+  if(devMode == false) {
+    autoUpdater.checkForUpdates();
+  } else {
+    if(gameDirectory == '')
+    {
+      dialog.showMessageBox({
+        type: "info",
+        message: "First time install detected, please select your ROSE install directory."
+      });
+
+      let picked = dialog.showOpenDialog({
+        title: 'Select ROSE Install directory',
+        properties: ['openFile'],
+        filters: [
+          { name: 'TRose', extensions: ['exe'] },
+          { name: 'All Files', extensions: ['*'] }
+        ]
+      });
+      console.log(picked);
+      let idx = picked[0].lastIndexOf('\\');
+      gameDirectory = picked[0].substring(0, idx+1);
+      store.set('gameDir', gameDirectory);
+    }
+    createWindow();
+  }
 });
