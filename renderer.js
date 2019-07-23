@@ -1,5 +1,4 @@
 const {ipcRenderer} = require('electron');
-const {log} = require('electron-log');
 
 document.getElementById("btn-launch").disabled = true;
 document.getElementById("btn-launch").innerHTML = "Updating...";
@@ -7,6 +6,8 @@ let processName = "";
 let processArgs = [];
 let serverIp = "";
 let serverPort = "";
+let updateList = [];
+let currentUpdateIndex = 0;
 
 
 var serverString = null;
@@ -27,21 +28,27 @@ xhttp.onreadystatechange = function()
 xhttp.open("GET", "https://azgstudio.com/get_serverip.php", true);
 xhttp.send();
 
+function loadUrl(url) {
+  console.log("attempting to loadURL");
+  const webview = document.querySelector('#news');
+  const loadPage = () => {
+    webview.loadURL(url);
+    webview.removeEventListener('dom-ready', loadPage);
+  };
+  webview.addEventListener('dom-ready', loadPage)
+}
 
 function updateProgress(cProgress) {
-  var elem = document.getElementById("myBar");
-  elem.style.width = cProgress + '%';
+  console.log("progress is " + cProgress);
+  var elem = document.getElementById("currentProgress");
+  elem.value = cProgress;
 }
 
 function checkForUpdate(value) {
   ipcRenderer.sendSync("check-file", value);
-}
-
-function download_update(url) {
-  ipcRenderer.send("download", {
-    url: url,
-    properties: {directory: "."}
-  });
+  currentUpdateIndex += 1;
+  const cleanProgressInPercentages = Math.floor(currentUpdateIndex / updateList.length) * 100;
+  updateProgress(cleanProgressInPercentages);
 }
 
 function send_launch() {
@@ -67,8 +74,7 @@ function update_complete() {
 
 ipcRenderer.on("download progress", (event, progress) => {
   const cleanProgressInPercentages = Math.floor(progress * 100); // Without decimal point
-  if(cleanProgressInPercentages !== 0)
-    updateProgress(cleanProgressInPercentages);
+  updateProgress(cleanProgressInPercentages);
 });
 
 ipcRenderer.on("server address update", (event, info) => {
@@ -78,17 +84,6 @@ ipcRenderer.on("server address update", (event, info) => {
 
 ipcRenderer.on("download complete", (event, file) => {
   if(file.includes(".zip") == true) {
-    //console.log('sending \'extract file\' event for \'' + file + '\'');
     ipcRenderer.send("extract file", {filename: file});
   }
-  // else {
-  //   console.log('we finished downloading ' + file);
-  // }
 });
-
-// ipcRenderer.on('message', function(event, text) {
-//   var container = document.getElementById('messages');
-//   var message = document.createElement('div');
-//   message.innerHTML = text;
-//   container.appendChild(message);
-// })

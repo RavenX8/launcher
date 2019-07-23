@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="dark.css">
+    <meta charset="UTF-8">
+    <title>OsIROSE-Updater</title>
+  </head>
+  <body>
+    <webview id="news" src="https://www.azgstudio.com/"></webview>
+    <div id="statusArea">
+      <progress id="currentProgress" value="0" max="100"></progress>
+      <button id="btn-launch" onclick="send_launch()">Updating...</button>
+    </div>
+
+    <script src="renderer.js"></script>
+    <script src="https://azgstudio.com/patch/root.js"></script>
+  </body>
+</html>

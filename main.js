@@ -1,10 +1,10 @@
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const {download} = require("electron-dl");
-//const {autoUpdater} = require("electron-updater");
 const fs = require('fs');
 const {spawn} = require('child_process');
 var DecompressZip = require('decompress-zip');
 var sha256 = require('js-sha256');
+const Store = require('electron-store');
 
 const path = require('path')
 const devMode = (process.argv || []).indexOf('--dev') !== -1
@@ -17,15 +17,22 @@ if (devMode) {
 
 // Make sure javascript doesn't kill our window before we are done with it
 let win;
+let gameDirectory;
+
+const schema = {
+  gameDir: {
+    type: 'string'
+  }
+}
+
+const store = new Store({schema});
+gameDirectory = store.get('gameDir', '');
 
 function createWindow () {
-  // Create the browser window.
-  var basepath = app.getAppPath();
   let win = new BrowserWindow({
     width: 500,
     height: 600,
-    //center: true,
-    resizable: false,
+    resizable: devMode,
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
@@ -34,15 +41,10 @@ function createWindow () {
   });
   win.setMenu(null);
   // and load the index.html of the app.
-  win.loadFile('html/index.html', {"extraHeaders" : "pragma: no-cache\n"})
-
-  win.webContents.session.clearCache(function(){
-    //some callback.
-  });
+  win.loadFile('index.html', {"extraHeaders" : "pragma: no-cache\n"})
 
   // Open the DevTools.
-  if(devMode)
-    win.webContents.openDevTools();
+  //if(devMode) win.webContents.openDevTools();
 
   win.once('ready-to-show', () => {
     win.show()
@@ -63,17 +65,7 @@ function createWindow () {
   });
 
   ipcMain.on("extract file", (event, info) => {
-    // console.log('got extract file event for \'' + info.filename + '\'');
     var unzipper = new DecompressZip(info.filename);
-
-    unzipper.on('error', function (err) {
-      // console.log('Caught an error');
-      // console.log(err);
-    });
-
-    unzipper.on('progress', function (fileIndex, fileCount) {
-      //console.log('Extracted file ' + (fileIndex + 1) + ' of ' + fileCount);
-    });
 
     unzipper.on('extract', function (log) {
       if (fs.existsSync(this.filename)) {
@@ -82,6 +74,7 @@ function createWindow () {
     });
 
     unzipper.extract({
+      path: gameDirectory,
       filter: function (file) {
           return file.type !== "SymbolicLink";
       }
@@ -89,8 +82,8 @@ function createWindow () {
   });
 
   ipcMain.on("check-file", (event, info) => {
-    if (fs.existsSync(info.filename)) {
-      var file_for_update = fs.readFileSync(info.filename);
+    if (fs.existsSync(gameDirectory + info.filename)) {
+      var file_for_update = fs.readFileSync(gameDirectory + info.filename);
       var hash = sha256(file_for_update);
       if(devMode) {
         console.log("Hash: '" + hash.toUpperCase() + "'");
@@ -99,7 +92,7 @@ function createWindow () {
       
       if(hash.toUpperCase() != info.hash.toUpperCase())
       {
-        download(BrowserWindow.getFocusedWindow(), info.url, {directory: "."})
+        download(BrowserWindow.getFocusedWindow(), info.url, {directory: gameDirectory})
           .then(dl => {
             win.webContents.send("download complete", dl.getSavePath())
             event.returnValue = true;
@@ -109,9 +102,7 @@ function createWindow () {
         event.returnValue = true;
       }
     } else {
-      //console.log(info.url);
-      //TODO: need to download file now
-      download(BrowserWindow.getFocusedWindow(), info.url, {directory: "."})
+      download(BrowserWindow.getFocusedWindow(), info.url, {directory: gameDirectory})
         .then(dl => {
           win.webContents.send("download complete", dl.getSavePath())
           event.returnValue = true;
@@ -131,7 +122,7 @@ function createWindow () {
   });
 
   ipcMain.on("launch-game", (event, info) => {
-    const subprocess = spawn(info.processName, info.processArgs, {
+    const subprocess = spawn(gameDirectory + info.processName, info.processArgs, {
       detached: true,
       stdio: 'ignore'
     });
@@ -158,24 +149,25 @@ app.on('activate', () => {
 
 app.on('ready', function() {
   //autoUpdater.checkForUpdates();
+  if(gameDirectory == '')
+  {
+    dialog.showMessageBox({
+      type: "info",
+      message: "First time install detected, please select your ROSE install directory."
+    });
+
+    let picked = dialog.showOpenDialog({
+      title: 'Select ROSE Install directory',
+      properties: ['openFile'],
+      filters: [
+        { name: 'TRose', extensions: ['exe'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    });
+    console.log(picked);
+    let idx = picked[0].lastIndexOf('\\');
+    gameDirectory = picked[0].substring(0, idx+1);
+    store.set('gameDir', gameDirectory);
+  }
   createWindow();
 });
-
-// autoUpdater.on('error', message => {
-//   console.log('There was a problem updating the application')
-//   console.log(message)
-// });
-
-// // If there aren't any updates, create the window
-// autoUpdater.on('update-not-available', (ev, info) => {
-//   createWindow();
-// });
-
-// autoUpdater.on('update-downloaded', (ev, info) => {
-//   // Wait 5 seconds, then quit and install
-//   // In your application, you don't need to wait 5 seconds.
-//   // You could call autoUpdater.quitAndInstall(); immediately
-//   //setTimeout(function() {
-//     autoUpdater.quitAndInstall();
-//   //}, 1000);
-// });
