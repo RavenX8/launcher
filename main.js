@@ -124,10 +124,17 @@ function createWindow () {
   });
 
   ipcMain.on("launch-game", (event, info) => {
+    let needShell = false;
+    if (process.platform !== 'win32') {
+      info.processName = info.processName.replace('.exe', '.sh');
+      needShell = true;
+    }
+    
     const subprocess = spawn(gameDirectory + info.processName, info.processArgs, {
       cwd: gameDirectory,
       detached: true,
-      stdio: 'ignore'
+      stdio: 'ignore',
+      shell: needShell
     });
     subprocess.unref();
     win.close();
