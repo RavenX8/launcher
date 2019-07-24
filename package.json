@@ -30,6 +30,9 @@
         "channel": "latest"
       }
     },
+    "nsis": {
+      "deleteAppDataOnUninstall": true
+    },
     "appId": "com.github.dev-osrose.patcher",
     "productName": "OsIROSE Test Server",
     "copyright": "Copyright © 2019 ${author}"
