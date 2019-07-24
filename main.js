@@ -9,6 +9,7 @@ var DecompressZip = require('decompress-zip');
 var sha256 = require('js-sha256');
 
 const devMode = (process.argv || []).indexOf('--dev') !== -1
+const clearConfig = (process.argv || []).indexOf('--first-start') !== -1
 
 if (devMode) {
   // load the app dependencies
@@ -28,6 +29,9 @@ const schema = {
 }
 
 const store = new Store({schema});
+if(clearConfig) {
+  store.clear();
+}
 gameDirectory = store.get('gameDir', '');
 
 function createWindow () {
