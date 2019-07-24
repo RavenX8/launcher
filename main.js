@@ -1,13 +1,13 @@
+const {fs} = require('fs');
+const {path} = require('path');
+const {spawn} = require('child_process');
 const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const {download} = require("electron-dl");
 const {autoUpdater} = require("electron-updater");
-const fs = require('fs');
-const {spawn} = require('child_process');
+const {Store} = require('electron-store');
 var DecompressZip = require('decompress-zip');
 var sha256 = require('js-sha256');
-const Store = require('electron-store');
 
-const path = require('path')
 const devMode = (process.argv || []).indexOf('--dev') !== -1
 
 if (devMode) {

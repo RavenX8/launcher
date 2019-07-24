@@ -29,7 +29,6 @@ xhttp.open("GET", "https://azgstudio.com/get_serverip.php", true);
 xhttp.send();
 
 function loadUrl(url) {
-  console.log("attempting to loadURL");
   const webview = document.querySelector('#news');
   const loadPage = () => {
     webview.loadURL(url);
@@ -39,7 +38,6 @@ function loadUrl(url) {
 }
 
 function updateProgress(cProgress) {
-  console.log("progress is " + cProgress);
   var elem = document.getElementById("currentProgress");
   elem.value = cProgress;
 }
