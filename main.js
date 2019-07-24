@@ -1,15 +1,15 @@
-const {fs} = require('fs');
-const {path} = require('path');
+const fs = require('fs');
+const path = require('path');
 const {spawn} = require('child_process');
 const {app, BrowserWindow, ipcMain, dialog} = require('electron');
 const {download} = require("electron-dl");
 const {autoUpdater} = require("electron-updater");
-const {Store} = require('electron-store');
+const Store = require('electron-store');
 var DecompressZip = require('decompress-zip');
 var sha256 = require('js-sha256');
 
-const devMode = (process.argv || []).indexOf('--dev') !== -1
-const clearConfig = (process.argv || []).indexOf('--first-start') !== -1
+const devMode = (process.argv || []).indexOf('--dev') !== -1;
+const clearConfig = (process.argv || []).indexOf('--first-start') !== -1;
 
 if (devMode) {
   // load the app dependencies
