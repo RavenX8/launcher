@@ -163,6 +163,11 @@ autoUpdater.on('error', (error) => {
 });
 
 autoUpdater.on('update-available', () => {
+  dialog.showMessageBox({
+    type: "info",
+    message: "Downloading launcher update, please wait."
+  }, (response, checkboxChecked) => {
+  });
 });
 
 autoUpdater.on('update-not-available', (info) => {
@@ -181,7 +186,6 @@ autoUpdater.on('update-not-available', (info) => {
         { name: 'All Files', extensions: ['*'] }
       ]
     });
-    console.log(picked);
     let idx = picked[0].lastIndexOf('\\');
     gameDirectory = picked[0].substring(0, idx+1);
     store.set('gameDir', gameDirectory);
@@ -190,13 +194,9 @@ autoUpdater.on('update-not-available', (info) => {
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  // dialog.showMessageBox({
-  //   title: 'Install Updates',
-  //   message: 'Updates downloaded, application will close for update...'
-  // }, () => {
-  //   setImmediate(() => autoUpdater.quitAndInstall());
-  // });
-  autoUpdater.quitAndInstall();
+  setTimeout(function() {
+    autoUpdater.quitAndInstall();  
+  }, 1000)
 });
 
 app.on('ready', function() {
