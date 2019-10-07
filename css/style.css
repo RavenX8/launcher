@@ -1,0 +1,184 @@
+#statusArea {
+    position: absolute;
+    bottom: 10px;
+    overflow: hidden;
+    width: 98%;
+    height: 30px;
+}
+
+#currentProgress {
+    width: 78%;
+    height: 30px;
+}
+
+#btn-launch {
+    float: right;
+    width: 100px;
+    height: 30px;
+}
+
+#news {
+    margin: 0;
+    font-family: arial;
+    font-size: 12px;
+    background-color: #fff;
+    height: 480px;
+}
+
+/* --- Container --- */
+#TopWindow {
+    width: 520px;
+    height: 107px;
+}
+
+#TopLeft {
+    float: left;
+    width: 46%;
+    height: 100%;
+    display: inline-block;
+    position: relative;
+}
+
+#TopLeft img {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    margin-left: 6px;
+    float: left;
+}
+
+#TopRight {
+    float: right;
+    width: 54%;
+    height: 100%;
+}
+
+#TopRight a {
+    color: #666666;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#TopRight i {
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0px 16px 0px 2px;
+}
+
+#Register {
+    color: #8cc13a;
+}
+
+#Website {
+    color: #d84343;
+}
+
+#Discord {
+    color: #6445a2;
+}
+
+#TopRight div {
+    height: 20px;
+    width: 94%;
+    background-color: #fff;
+    padding: 6px 4px 2px 4px;
+    float: right;
+    margin-top: 5px;
+    margin-right: 6px;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px #bbb;
+}
+
+#TopRight div:hover {
+    background-color: #f5f6f8;
+}
+
+#NewsWindow {
+    width: 520px;
+    height: 346px;
+    background-color: #fff;
+}
+
+#NewsTable {
+    width: 520px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#PageTable {
+    width: 160px;
+    margin: 0px auto;
+}
+
+/* --- NewsTable --- */
+#ColNo {
+    width: 10%;
+}
+
+#ColTitle {
+    width: 74%;
+}
+
+#ColDate {
+    width: 16%;
+}
+
+.ColNo {
+    width: 10%;
+    text-align: center;
+}
+
+.ColType {
+    width: 16%;
+}
+
+.ColTitle {
+    width: 58%;
+}
+
+.ColDate {
+    width: 16%;
+    text-align: center;
+}
+
+.NewsTitle td {
+    font-weight: bold;
+    text-align: center;
+    color: #666666;
+    padding: 2px 0px 4px 0px;
+    border-bottom: 1px solid #acaeb4;
+}
+
+.NewsContent td {
+    padding: 6px 0px 6px 0px;
+    color: #565656;
+}
+
+.NewsContent:nth-child(odd) {
+    background-color: #edf1f3;
+}
+
+.NewsPage {
+    padding: 5px 0px 5px 0px;
+    color: #565656;
+    text-align: center;
+}
+
+.PagesButton {
+    font-weight: bold;
+    color: #3a6666;
+}
+
+.PagesButtonLink {
+    font-weight: bold;
+    color: #bfbfbf;
+    padding: 0px 2px 0px 2px;
+    text-decoration: none;
+}
+
+#PagesButtonVisited {
+    font-weight: bold;
+    color: #ff003a;
+    padding: 0px 2px 0px 2px;
+}

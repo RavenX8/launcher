@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const {spawn} = require('child_process');
-const {app, BrowserWindow, ipcMain, dialog} = require('electron');
+const {app, BrowserWindow, ipcMain, dialog, shell} = require('electron');
 const {download} = require("electron-dl");
 const {autoUpdater} = require("electron-updater");
 const Store = require('electron-store');
@@ -36,7 +36,7 @@ gameDirectory = store.get('gameDir', '');
 
 function createWindow () {
   let win = new BrowserWindow({
-    width: 500,
+    width: 550,
     height: 600,
     resizable: devMode,
     webPreferences: {
@@ -50,7 +50,12 @@ function createWindow () {
   win.loadFile('index.html', {"extraHeaders" : "pragma: no-cache\n"})
 
   // Open the DevTools.
-  //if(devMode) win.webContents.openDevTools();
+  if(devMode) win.webContents.openDevTools();
+
+  win.webContents.on('will-navigate', (event, url) => {
+    event.preventDefault();
+    shell.openExternal(url);
+  });
 
   win.once('ready-to-show', () => {
     win.show()

@@ -1,18 +1,74 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" href="dark.css">
-    <meta charset="UTF-8">
-    <title>OsIROSE-Updater</title>
-  </head>
-  <body>
-    <webview id="news" src="https://azgstudio.com/category/osirose-new/"></webview>
-    <div id="statusArea">
-      <progress id="currentProgress" value="0" max="100"></progress>
-      <button id="btn-launch" onclick="send_launch()">Updating...</button>
-    </div>
 
-    <script src="renderer.js"></script>
-    <script src="https://azgstudio.com/patch/root.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>OsIROSE-Updater</title>
+  <script src="https://kit.fontawesome.com/1a197246ec.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+  <div id="news">
+    <!-- Thank you Nathzarel for the news section design -->
+    <div id="TopWindow">
+      <!-- Logo -->
+      <div id="TopLeft">
+        <img src="images/logo.png" />
+      </div>
+      <!-- Navigation -->
+      <div id="TopRight">
+        <a href="#">
+          <div><i id="Register" class="fas fa-user-circle"></i>Register Now!</div>
+        </a>
+        <a href="http://forum.dev-osrose.com">
+          <div><i id="Website" class="fas fa-compass"></i>Visit our website</div>
+        </a>
+        <a href="https://discord.gg/u7UE5fW">
+          <div><i id="Discord" class="fab fa-discord"></i>Join our Discord</div>
+        </a>
+      </div>
+    </div>
+    <!-- Main container -->
+    <div id="NewsWindow">
+      <!-- News list -->
+      <table cellspacing="0" cellpadding="0" align="center" id="NewsTable">
+        <!-- Top bar -->
+        <tr class="NewsTitle">
+          <td id="ColNo">No</td>
+          <td id="ColTitle" colspan="2">Title</td>
+          <td id="ColDate">Date</td>
+        </tr>
+      </table>
+      <!-- Pages index -->
+      <table cellspacing="0" cellpadding="0" align="center" id="PageTable">
+        <tr>
+          <!-- Pages -10 -->
+          <td class="NewsPage"><span class="PagesButton">[-10]</span></td>
+          <!-- Previous Page -->
+          <td class="NewsPage"><a href="#"><img src="images/leftpage.png" /></a></td>
+          <!-- Pages -->
+          <td class="NewsPage">
+            <!-- TODO: Update these links based on amount of elements in the list -->
+            <span id="PagesButtonVisited">1</span>
+            <a href="#" class="PagesButtonLink">2</a>
+            <a href="#" class="PagesButtonLink">3</a>
+          </td>
+          <!-- Next page -->
+          <td class="NewsPage"><a href="#"><img src="images/rightpage.png" /></a></td>
+          <!-- Pages +10 -->
+          <td class="NewsPage"><span class="PagesButton">[+10]</span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div id="statusArea">
+    <progress id="currentProgress" value="0" max="100"></progress>
+    <button id="btn-launch" onclick="send_launch()">Updating...</button>
+  </div>
+
+  <script src="renderer.js"></script>
+  <script src="https://azgstudio.com/patch/root.js"></script>
+</body>
+
 </html>

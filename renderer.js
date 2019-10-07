@@ -1,14 +1,13 @@
 const {ipcRenderer} = require('electron');
 
 document.getElementById("btn-launch").disabled = true;
-document.getElementById("btn-launch").innerHTML = "Updating...";
+document.getElementById("btn-launch").innerHTML = "Checking for updates";
 let processName = "";
 let processArgs = [];
 let serverIp = "";
 let serverPort = "";
 let updateList = [];
 let currentUpdateIndex = 0;
-
 
 var serverString = null;
 var xhttp = new XMLHttpRequest();
@@ -27,6 +26,52 @@ xhttp.onreadystatechange = function()
 };
 xhttp.open("GET", "https://azgstudio.com/get_serverip.php", true);
 xhttp.send();
+
+const container = document.getElementById('NewsTable');
+function appendNews(id, element) {
+  const row = document.createElement('tr');
+  row.className = "NewsContent";
+
+  const number = document.createElement('td');
+  const type = document.createElement('td');
+  const title = document.createElement('td');
+  const date = document.createElement('td');
+  number.className = "ColNo";
+  type.className = "ColType";
+  title.className = "ColTitle";
+  date.className = "ColDate";
+
+  number.innerHTML = id;
+  type.innerHTML = element['type'];
+  title.innerHTML = element['title'];
+  date.innerHTML = element['date'].split(" ")[0];
+  row.appendChild(number);
+  row.appendChild(type);
+  row.appendChild(title);
+  row.appendChild(date);
+  //TODO: figure out how to do a drop down thingy for the extended description
+  container.appendChild(row);
+}
+
+const http = require('https');
+http.get(
+  'https://azgstudio.com/patch/news.php', (resp) => {
+    let data = '';
+    // A chunk of data has been recieved.
+    resp.on('data', (chunk) =>{
+      data += chunk;
+    });
+    // The whole response has been received. Print out the result.
+    resp.on('end', () =>{
+      let news = JSON.parse(data);
+      for(i = news.length-1; i >= 0; i--)
+      {
+        appendNews(i+1, news[i]);
+      }
+  });
+}).on("error", (err) => {
+  console.log("Error: " + err.message);
+});
 
 function loadUrl(url) {
   const webview = document.querySelector('#news');
@@ -67,7 +112,7 @@ function send_launch() {
 
 function update_complete() {
   document.getElementById("btn-launch").disabled = false;
-  document.getElementById("btn-launch").innerHTML = "Launch!";
+  document.getElementById("btn-launch").innerHTML = "Launch";
 }
 
 ipcRenderer.on("download progress", (event, progress) => {
