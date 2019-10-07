@@ -40,7 +40,6 @@ function createWindow () {
     height: 600,
     resizable: devMode,
     webPreferences: {
-      webviewTag: true,
       nodeIntegration: true,
       show: false
     }
