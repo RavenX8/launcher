@@ -1,13 +1,18 @@
 const {ipcRenderer} = require('electron');
 
 document.getElementById("btn-launch").disabled = true;
-document.getElementById("btn-launch").innerHTML = "Checking for updates";
+document.getElementById("btn-launch").innerHTML = "Checking updates";
 let processName = "";
 let processArgs = [];
 let serverIp = "";
 let serverPort = "";
 let updateList = [];
 let currentUpdateIndex = 0;
+
+var newsArray = [];
+const maxVisibleNews = 10;
+var currentNewsPage = 0;
+var maxPages = 0;
 
 var serverString = null;
 var xhttp = new XMLHttpRequest();
@@ -27,7 +32,8 @@ xhttp.onreadystatechange = function()
 xhttp.open("GET", "https://azgstudio.com/get_serverip.php", true);
 xhttp.send();
 
-const container = document.getElementById('NewsTable');
+const newsTable = document.getElementById('NewsTable');
+const newsPageLinks = document.getElementById('NewsPageLinks');
 function appendNews(id, element) {
   const row = document.createElement('tr');
   row.className = "NewsContent";
@@ -50,7 +56,8 @@ function appendNews(id, element) {
   row.appendChild(title);
   row.appendChild(date);
   //TODO: figure out how to do a drop down thingy for the extended description
-  container.appendChild(row);
+
+  newsArray.push(row);
 }
 
 const http = require('https');
@@ -62,16 +69,99 @@ http.get(
       data += chunk;
     });
     // The whole response has been received. Print out the result.
-    resp.on('end', () =>{
+    resp.on('end', () => {
       let news = JSON.parse(data);
       for(i = news.length-1; i >= 0; i--)
       {
         appendNews(i+1, news[i]);
       }
+      maxPages = Math.round((newsArray.length / maxVisibleNews))-1;
+      showNews(0);
+      doUpdate();
   });
 }).on("error", (err) => {
   console.log("Error: " + err.message);
 });
+
+function doUpdate() {
+  http.get(
+    'https://azgstudio.com/patch/root.js', (resp) => { // TODO: replace this with a JSON object
+      let data = '';
+      // A chunk of data has been recieved.
+      resp.on('data', (chunk) =>{
+        data += chunk;
+      });
+      
+      // The whole response has been received. Print out the result.
+      resp.on('end', () => {
+        let patchScript = document.createElement("script");
+        patchScript.text = data;
+        document.head.appendChild(patchScript);
+    });
+  }).on("error", (err) => {
+    console.log("Error: " + err.message);
+  });
+}
+
+function updatePageLinks() {
+  while (newsPageLinks.hasChildNodes()) {
+    newsPageLinks.removeChild(newsPageLinks.lastChild);
+  }
+
+  let startIdx = currentNewsPage-2;
+  let endIdx = currentNewsPage+3;
+
+  if(startIdx < 0) startIdx = 0;
+  if(endIdx > maxPages) endIdx = maxPages+1;
+
+  for(let i=startIdx; i < endIdx; i++)
+  {
+    let page;
+    if (i == currentNewsPage) {
+      page = document.createElement('span');
+      page.id = "PagesButtonVisited";
+    } else {
+      page = document.createElement('a');
+      page.href = "javascript:void(0);";
+      page.setAttribute("onclick", "showNews(" + i + ");");
+      page.className = "PagesButtonLink";
+    }
+    page.innerHTML = (i+1);
+    newsPageLinks.appendChild(page);
+  }
+}
+
+function showNews(showPage = 0) {
+  while (newsTable.hasChildNodes()) {
+    if (newsTable.lastChild.className !== "NewsTitle")
+      newsTable.removeChild(newsTable.lastChild);
+    else 
+      break;
+  }
+
+  let startIdx = (maxVisibleNews*showPage);
+  let endIdx = (maxVisibleNews*showPage)+maxVisibleNews;
+  for(let i = startIdx; i < newsArray.length && i < endIdx; ++i)
+  {
+    newsTable.appendChild(newsArray[i]);
+  }
+  currentNewsPage = showPage;
+  updatePageLinks();
+}
+
+function prevPage(count = 1) {
+  let newPageId = currentNewsPage - count;
+  if (newPageId < 0) newPageId = 0;
+  if (newPageId > maxPages) newPageId = maxPages;
+  showNews(newPageId);
+}
+
+function nextPage(count = 1) {
+  let newPageId = currentNewsPage + count;
+  if (newPageId < 0) newPageId = 0;
+  if (newPageId > maxPages) newPageId = maxPages;
+  showNews(newPageId);
+}
 
 function loadUrl(url) {
   const webview = document.querySelector('#news');
