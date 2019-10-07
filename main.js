@@ -50,7 +50,7 @@ function createWindow () {
   win.loadFile('index.html', {"extraHeaders" : "pragma: no-cache\n"})
 
   // Open the DevTools.
-  if(devMode) win.webContents.openDevTools();
+  //if(devMode) win.webContents.openDevTools();
 
   win.webContents.on('will-navigate', (event, url) => {
     event.preventDefault();
