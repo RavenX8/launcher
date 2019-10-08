@@ -150,12 +150,12 @@
     border-bottom: 1px solid #acaeb4;
 }
 
-.NewsContent td {
+.NewsContentHeader td {
     padding: 6px 0px 6px 0px;
     color: #565656;
 }
 
-.NewsContent:nth-child(odd) {
+.NewsContentHeader:nth-child(odd) {
     background-color: #edf1f3;
 }
 
