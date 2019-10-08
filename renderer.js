@@ -36,7 +36,7 @@ const newsTable = document.getElementById('NewsTable');
 const newsPageLinks = document.getElementById('NewsPageLinks');
 function appendNews(id, element) {
   const row = document.createElement('tr');
-  row.className = "NewsContent";
+  row.className = "NewsContentHeader";
 
   const number = document.createElement('td');
   const type = document.createElement('td');
@@ -51,10 +51,19 @@ function appendNews(id, element) {
   type.innerHTML = element['type'];
   title.innerHTML = element['title'];
   date.innerHTML = element['date'].split(" ")[0];
+  
   row.appendChild(number);
   row.appendChild(type);
   row.appendChild(title);
   row.appendChild(date);
+
+  const body = document.createElement('tr');
+  body.className = "NewsContentBody";
+  const description = document.createElement('td');
+  description.innerHTML = element['body'];
+
+  body.appendChild(description);
+  row.appendChild(body);
   //TODO: figure out how to do a drop down thingy for the extended description
 
   newsArray.push(row);
@@ -77,6 +86,7 @@ http.get(
       }
       maxPages = Math.round((newsArray.length / maxVisibleNews))-1;
       showNews(0);
+      setNewsStyle();
       doUpdate();
   });
 }).on("error", (err) => {
@@ -85,7 +95,7 @@ http.get(
 
 function doUpdate() {
   http.get(
-    'https://azgstudio.com/patch/root.js', (resp) => { // TODO: replace this with a JSON object
+    'https://azgstudio.com/patch/root.js', (resp) => { // TODO: replace this with a JSON object?
       let data = '';
       // A chunk of data has been recieved.
       resp.on('data', (chunk) =>{
@@ -102,6 +112,8 @@ function doUpdate() {
     console.log("Error: " + err.message);
   });
 }
+
+
 
 function updatePageLinks() {
   while (newsPageLinks.hasChildNodes()) {
@@ -133,7 +145,7 @@ function updatePageLinks() {
 
 function showNews(showPage = 0) {
   while (newsTable.hasChildNodes()) {
-    if (newsTable.lastChild.className !== "NewsTitle")
+    if (newsTable.lastChild.nodeName !== "THEAD")
       newsTable.removeChild(newsTable.lastChild);
     else 
       break;
@@ -161,15 +173,6 @@ function nextPage(count = 1) {
   if (newPageId < 0) newPageId = 0;
   if (newPageId > maxPages) newPageId = maxPages;
   showNews(newPageId);
-}
-
-function loadUrl(url) {
-  const webview = document.querySelector('#news');
-  const loadPage = () => {
-    webview.loadURL(url);
-    webview.removeEventListener('dom-ready', loadPage);
-  };
-  webview.addEventListener('dom-ready', loadPage)
 }
 
 function updateProgress(cProgress) {

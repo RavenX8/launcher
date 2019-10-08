@@ -4,8 +4,20 @@
 <head>
   <meta charset="UTF-8">
   <title>OsIROSE-Updater</title>
+  <script>window.$ = window.jQuery = require('jquery');</script>
   <script src="https://kit.fontawesome.com/1a197246ec.js"></script>
   <link rel="stylesheet" type="text/css" href="css/style.css">
+  <script>
+    function setNewsStyle() {
+      var $news_table = $('#NewsTable');
+      $news_table.find("tr").not('.NewsTitle').not('.NewsContentHeader').not('.ColNo').not('.ColType').not('.ColTitle').not('.ColDate').hide();
+
+      $news_table.find(".NewsContentHeader").click(function() {
+        $news_table.find('.NewsContentHeader').not(this).children().fadeOut(500);
+        $(this).children().fadeIn(500);
+      });
+    };
+  </script>
 </head>
 
 <body>
@@ -33,12 +45,13 @@
     <div id="NewsWindow">
       <!-- News list -->
       <table cellspacing="0" cellpadding="0" align="center" id="NewsTable">
-        <!-- Top bar -->
-        <tr class="NewsTitle">
-          <td id="ColNo">No</td>
-          <td id="ColTitle" colspan="2">Title</td>
-          <td id="ColDate">Date</td>
-        </tr>
+        <thead>
+          <tr class="NewsTitle">
+            <th id="ColNo">No</th>
+            <th id="ColTitle" colspan="2">Title</th>
+            <th id="ColDate">Date</th>
+          </tr>
+        </thead>
       </table>
       <!-- Pages index -->
       <table cellspacing="0" cellpadding="0" align="center" id="PageTable">
