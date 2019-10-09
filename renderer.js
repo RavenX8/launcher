@@ -1,8 +1,5 @@
 const {ipcRenderer} = require('electron');
 
-//TODO: clean up this js file as it looks ugly!
-
-
 document.getElementById("btn-launch").disabled = true;
 document.getElementById("btn-launch").innerHTML = "Checking updates";
 let processName = "";
@@ -116,6 +113,7 @@ function doUpdate() {
       resp.on('end', () => {
         let patchScript = document.createElement("script");
         patchScript.text = data;
+        patchScript.setAttribute("nonce", "231f2678dac23");
         document.head.appendChild(patchScript);
     });
   }).on("error", (err) => {
@@ -186,6 +184,11 @@ function updateProgress(cProgress) {
   elem.value = cProgress;
 }
 
+function update_complete() {
+  document.getElementById("btn-launch").disabled = false;
+  document.getElementById("btn-launch").innerHTML = "Launch";
+}
+
 function checkForUpdate(value) {
   ipcRenderer.sendSync("check-file", value);
   currentUpdateIndex += 1;
@@ -207,11 +210,6 @@ function send_launch() {
     processName: processName,
     processArgs: processArgs
   });
-}
-
-function update_complete() {
-  document.getElementById("btn-launch").disabled = false;
-  document.getElementById("btn-launch").innerHTML = "Launch";
 }
 
 ipcRenderer.on("download progress", (event, progress) => {
