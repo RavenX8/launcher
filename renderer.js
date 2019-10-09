@@ -15,7 +15,7 @@ let currentUpdateIndex = 0;
 var newsArray = [];
 const maxVisibleNews = 10;
 var currentNewsPage = 0;
-var maxPages = 0;
+var additionalPages = 0;
 
 var serverString = null;
 var xhttp = new XMLHttpRequest();
@@ -95,7 +95,7 @@ http.get(
       {
         appendNews(i+1, news[i]);
       }
-      maxPages = 1 + Math.floor((newsArray.length / maxVisibleNews));
+      additionalPages = Math.floor((newsArray.length / maxVisibleNews));
       showNews(0);
       doUpdate();
   });
@@ -132,9 +132,9 @@ function updatePageLinks() {
   let endIdx = currentNewsPage+3;
 
   if(startIdx < 0) startIdx = 0;
-  if(endIdx > maxPages) endIdx = maxPages;
+  if(endIdx > additionalPages) endIdx = additionalPages;
 
-  for(let i=startIdx; i < endIdx; i++)
+  for(let i=startIdx; i <= endIdx; i++)
   {
     let page;
     if (i == currentNewsPage) {
@@ -170,14 +170,14 @@ function showNews(showPage = 0) {
 function prevPage(count = 1) {
   let newPageId = currentNewsPage - count;
   if (newPageId < 0) newPageId = 0;
-  if (newPageId > maxPages) newPageId = maxPages;
+  if (newPageId > additionalPages) newPageId = additionalPages;
   showNews(newPageId);
 }
 
 function nextPage(count = 1) {
   let newPageId = currentNewsPage + count;
   if (newPageId < 0) newPageId = 0;
-  if (newPageId > maxPages) newPageId = maxPages;
+  if (newPageId > additionalPages) newPageId = additionalPages;
   showNews(newPageId);
 }
 
