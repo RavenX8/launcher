@@ -37,6 +37,7 @@ xhttp.send();
 
 const newsArea = document.getElementById('NewsArea');
 const newsPageLinks = document.getElementById('NewsPageLinks');
+
 function appendNews(id, element) {
   const table = document.createElement('table');
   table.setAttribute("cellspacing", "0");

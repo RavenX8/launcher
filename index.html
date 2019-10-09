@@ -9,14 +9,15 @@
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <script>
     function setNewsStyle() {
-      var $news_table = $('#NewsArea');
+      let $news_table = $('#NewsArea');
       $news_table.find("tr").not('.NewsContentHeader').hide();
 
+      $news_table.find(".NewsContentHeader").unbind("click");
       $news_table.find(".NewsContentHeader").click(function() {
         $news_table.find('.NewsContentHeader').not(this).siblings().fadeOut(500);
         $(this).siblings().fadeToggle(500);
       });
-    };
+    }
   </script>
 </head>
 
