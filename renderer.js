@@ -95,7 +95,7 @@ http.get(
       {
         appendNews(i+1, news[i]);
       }
-      maxPages = Math.round((newsArray.length / maxVisibleNews))-1;
+      maxPages = 1 + Math.floor((newsArray.length / maxVisibleNews));
       showNews(0);
       doUpdate();
   });
@@ -132,7 +132,7 @@ function updatePageLinks() {
   let endIdx = currentNewsPage+3;
 
   if(startIdx < 0) startIdx = 0;
-  if(endIdx > maxPages) endIdx = maxPages+1;
+  if(endIdx > maxPages) endIdx = maxPages;
 
   for(let i=startIdx; i < endIdx; i++)
   {
