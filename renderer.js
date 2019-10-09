@@ -6,7 +6,7 @@ let processName = "";
 let processArgs = [];
 let serverIp = "";
 let serverPort = "";
-let updateList = [];
+let updateCount = 1;
 let currentUpdateIndex = 0;
 
 var newsArray = [];
@@ -102,7 +102,7 @@ http.get(
 
 function doUpdate() {
   http.get(
-    'https://azgstudio.com/patch/root.js', (resp) => { // TODO: replace this with a JSON object?
+    'https://azgstudio.com/patch/patch_list.php', (resp) => {
       let data = '';
       // A chunk of data has been recieved.
       resp.on('data', (chunk) =>{
@@ -111,10 +111,14 @@ function doUpdate() {
       
       // The whole response has been received. Print out the result.
       resp.on('end', () => {
-        let patchScript = document.createElement("script");
-        patchScript.text = data;
-        patchScript.setAttribute("nonce", "231f2678dac23");
-        document.head.appendChild(patchScript);
+        let patch_info = JSON.parse(data);
+        processName = patch_info['processName'];
+        processArgs = patch_info['processArgs'];
+        if(patch_info['patchInfo'].length)
+          updateCount = patch_info['patchInfo'].length;
+
+        patch_info['patchInfo'].forEach(checkForUpdate);
+        update_complete();
     });
   }).on("error", (err) => {
     console.log("Error: " + err.message);
@@ -192,7 +196,7 @@ function update_complete() {
 function checkForUpdate(value) {
   ipcRenderer.sendSync("check-file", value);
   currentUpdateIndex += 1;
-  const cleanProgressInPercentages = Math.floor(currentUpdateIndex / updateList.length) * 100;
+  const cleanProgressInPercentages = Math.floor(currentUpdateIndex / updateCount) * 100;
   updateProgress(cleanProgressInPercentages);
 }
 

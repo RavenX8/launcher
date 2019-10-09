@@ -78,9 +78,14 @@ function createWindow () {
     var unzipper = new DecompressZip(info.filename);
 
     unzipper.on('extract', function (log) {
-      if (fs.existsSync(this.filename)) {
-        fs.unlink(this.filename, (err) => {if (err) {return;}});
-      }
+      fs.unlink(this.filename, (err) => {
+        console.log("unlinking " + this.filename);
+        if (err) 
+        {
+          console.log(err);
+          return;
+        }
+      });
     });
 
     unzipper.extract({
