@@ -17,6 +17,7 @@
     height: 30px;
 }
 
+/* --- News stoof given --- */
 #news {
     margin: 0;
     font-family: arial;
@@ -100,10 +101,14 @@
     background-color: #fff;
 }
 
-#NewsTable {
+#NewsArea {
+    width: 520px;
+    margin-bottom: 10px;
+}
+
+#NewsTableHeader {
     width: 520px;
     margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 #PageTable {
@@ -112,37 +117,16 @@
 }
 
 /* --- NewsTable --- */
-#ColNo {
-    width: 10%;
-}
+#ColNo { width: 10%; }
+#ColTitle { width: 74%; }
+#ColDate { width: 16%; }
 
-#ColTitle {
-    width: 74%;
-}
+.ColNo { width: 10%; text-align: center; }
+.ColType { width: 30%; }
+.ColTitle { width: 44%; }
+.ColDate { width: 16%; text-align: center; }
 
-#ColDate {
-    width: 16%;
-}
-
-.ColNo {
-    width: 10%;
-    text-align: center;
-}
-
-.ColType {
-    width: 16%;
-}
-
-.ColTitle {
-    width: 58%;
-}
-
-.ColDate {
-    width: 16%;
-    text-align: center;
-}
-
-.NewsTitle td {
+.NewsTableHeader td {
     font-weight: bold;
     text-align: center;
     color: #666666;
@@ -150,13 +134,23 @@
     border-bottom: 1px solid #acaeb4;
 }
 
-.NewsContentHeader td {
-    padding: 6px 0px 6px 0px;
-    color: #565656;
+.NewsContent {
+    width: 100%;
 }
 
-.NewsContentHeader:nth-child(odd) {
+.NewsContent td {
+    padding: 6px 0px 6px 0px;
+    color: #565656;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NewsContent:nth-child(odd) {
     background-color: #edf1f3;
+}
+
+.NewsContentBody {
+    text-align: center;
 }
 
 .NewsPage {

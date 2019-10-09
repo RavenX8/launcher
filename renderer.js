@@ -1,5 +1,8 @@
 const {ipcRenderer} = require('electron');
 
+//TODO: clean up this js file as it looks ugly!
+
+
 document.getElementById("btn-launch").disabled = true;
 document.getElementById("btn-launch").innerHTML = "Checking updates";
 let processName = "";
@@ -32,11 +35,17 @@ xhttp.onreadystatechange = function()
 xhttp.open("GET", "https://azgstudio.com/get_serverip.php", true);
 xhttp.send();
 
-const newsTable = document.getElementById('NewsTable');
+const newsArea = document.getElementById('NewsArea');
 const newsPageLinks = document.getElementById('NewsPageLinks');
 function appendNews(id, element) {
-  const row = document.createElement('tr');
-  row.className = "NewsContentHeader";
+  const table = document.createElement('table');
+  table.setAttribute("cellspacing", "0");
+  table.setAttribute("cellpadding", "0");
+  table.setAttribute("align", "center");
+  table.className = "NewsContent";
+
+  const header = document.createElement('tr');
+  header.className = "NewsContentHeader";
 
   const number = document.createElement('td');
   const type = document.createElement('td');
@@ -52,21 +61,22 @@ function appendNews(id, element) {
   title.innerHTML = element['title'];
   date.innerHTML = element['date'].split(" ")[0];
   
-  row.appendChild(number);
-  row.appendChild(type);
-  row.appendChild(title);
-  row.appendChild(date);
+  header.appendChild(number);
+  header.appendChild(type);
+  header.appendChild(title);
+  header.appendChild(date);
 
   const body = document.createElement('tr');
   body.className = "NewsContentBody";
   const description = document.createElement('td');
+  description.setAttribute("colspan", "4");
   description.innerHTML = element['body'];
-
   body.appendChild(description);
-  row.appendChild(body);
-  //TODO: figure out how to do a drop down thingy for the extended description
 
-  newsArray.push(row);
+  table.appendChild(header);
+  table.appendChild(body);
+
+  newsArray.push(table);
 }
 
 const http = require('https');
@@ -86,7 +96,6 @@ http.get(
       }
       maxPages = Math.round((newsArray.length / maxVisibleNews))-1;
       showNews(0);
-      setNewsStyle();
       doUpdate();
   });
 }).on("error", (err) => {
@@ -112,8 +121,6 @@ function doUpdate() {
     console.log("Error: " + err.message);
   });
 }
-
-
 
 function updatePageLinks() {
   while (newsPageLinks.hasChildNodes()) {
@@ -144,21 +151,19 @@ function updatePageLinks() {
 }
 
 function showNews(showPage = 0) {
-  while (newsTable.hasChildNodes()) {
-    if (newsTable.lastChild.nodeName !== "THEAD")
-      newsTable.removeChild(newsTable.lastChild);
-    else 
-      break;
+  while (newsArea.hasChildNodes()) {
+    newsArea.removeChild(newsArea.lastChild);
   }
 
   let startIdx = (maxVisibleNews*showPage);
   let endIdx = (maxVisibleNews*showPage)+maxVisibleNews;
   for(let i = startIdx; i < newsArray.length && i < endIdx; ++i)
   {
-    newsTable.appendChild(newsArray[i]);
+    newsArea.appendChild(newsArray[i]);
   }
   currentNewsPage = showPage;
   updatePageLinks();
+  setNewsStyle();
 }
 
 function prevPage(count = 1) {

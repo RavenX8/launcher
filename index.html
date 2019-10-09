@@ -9,12 +9,12 @@
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <script>
     function setNewsStyle() {
-      var $news_table = $('#NewsTable');
-      $news_table.find("tr").not('.NewsTitle').not('.NewsContentHeader').not('.ColNo').not('.ColType').not('.ColTitle').not('.ColDate').hide();
+      var $news_table = $('#NewsArea');
+      $news_table.find("tr").not('.NewsContentHeader').hide();
 
       $news_table.find(".NewsContentHeader").click(function() {
-        $news_table.find('.NewsContentHeader').not(this).children().fadeOut(500);
-        $(this).children().fadeIn(500);
+        $news_table.find('.NewsContentHeader').not(this).siblings().fadeOut(500);
+        $(this).siblings().fadeToggle(500);
       });
     };
   </script>
@@ -44,15 +44,15 @@
     <!-- Main container -->
     <div id="NewsWindow">
       <!-- News list -->
-      <table cellspacing="0" cellpadding="0" align="center" id="NewsTable">
-        <thead>
-          <tr class="NewsTitle">
-            <th id="ColNo">No</th>
-            <th id="ColTitle" colspan="2">Title</th>
-            <th id="ColDate">Date</th>
-          </tr>
-        </thead>
+      <table cellspacing="0" cellpadding="0" align="center" id="NewsTableHeader">
+        <tr class="NewsTableHeader">
+          <th id="ColNo">No</th>
+          <th id="ColTitle" colspan="2">Title</th>
+          <th id="ColDate">Date</th>
+        </tr>
       </table>
+      <div id="NewsArea">
+      </div>
       <!-- Pages index -->
       <table cellspacing="0" cellpadding="0" align="center" id="PageTable">
         <tr>
