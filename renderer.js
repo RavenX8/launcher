@@ -1,5 +1,12 @@
 const {ipcRenderer} = require('electron');
 
+
+document.getElementById("Prev10Page").addEventListener("click", function() {prevPage(10);});
+document.getElementById("PrevPage").addEventListener("click", function() {prevPage(1);});
+document.getElementById("NextPage").addEventListener("click", function() {nextPage(1);});
+document.getElementById("Next10Page").addEventListener("click", function() {nextPage(10);});
+
+document.getElementById("btn-launch").addEventListener("click", send_launch);
 document.getElementById("btn-launch").disabled = true;
 document.getElementById("btn-launch").innerHTML = "Checking updates";
 let processName = "";
@@ -145,7 +152,8 @@ function updatePageLinks() {
     } else {
       page = document.createElement('a');
       page.href = "javascript:void(0);";
-      page.setAttribute("onclick", "showNews(" + i + ");");
+      //page.setAttribute("onclick", "showNews(" + i + ");");
+      page.addEventListener("click", function() {showNews(i);});
       page.className = "PagesButtonLink";
     }
     page.innerHTML = (i+1);
