@@ -1,6 +1,6 @@
 {
   "name": "osirose-patcher",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "ROSE online patcher made for osirose-new",
   "main": "main.js",
   "scripts": {
